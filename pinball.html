@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>月球基地弹珠台</title>
+<style>
+:root {
+  --ink: #e7fbf6;
+  --muted: #8aa8ad;
+  --cyan: #6fe8df;
+  --gold: #f4ca78;
+  --orange: #e8843a;
+  --app-height: 100vh;
+  --dock: #071018;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { height: 100%; touch-action: manipulation; }
+html, body {
+  height: 100%;
+  height: 100vh;
+  height: var(--app-height, 100vh);
+}
+body {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  background: #05080e;
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  user-select: none;
+}
+button {
+  font: inherit;
+  color: var(--ink);
+  background: #123044;
+  border: 2px solid #4a7e93;
+  padding: 9px 16px;
+  cursor: pointer;
+  box-shadow: 3px 3px 0 #04080d;
+  letter-spacing: 0.04em;
+  -webkit-appearance: none;
+  appearance: none;
+}
+button:active { opacity: 0.7; background: #1b455c; border-color: var(--cyan); }
+@media (hover: hover) {
+  button:hover { background: #1b455c; border-color: var(--cyan); }
+}
+button.primary { background: #17606b; border-color: var(--cyan); }
+button.small { padding: 5px 9px; font-size: 12px; }
+button:focus { outline: 2px solid var(--cyan); outline-offset: 2px; }
+#app {
+  position: relative;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  max-width: 1120px;
+  max-height: 630px;
+  background: #070d16;
+  border: 3px solid #2a4556;
+  box-shadow: 0 0 0 4px #0a121b, 0 18px 50px rgba(0, 0, 0, 0.67);
+  overflow: hidden;
+}
+#stage {
+  position: relative;
+  -webkit-box-flex: 1;
+  -ms-flex: 1 1 auto;
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  background: #05080e;
+}
+canvas {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  image-rendering: auto;
+  touch-action: none;
+}
+.hud-bar {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: rgba(6, 17, 29, 0.94);
+  border-bottom: 2px solid #2c5c70;
+  -ms-flex-negative: 0;
+  flex-shrink: 0;
+  z-index: 2;
+}
+.eyebrow { color: var(--cyan); font-size: 11px; letter-spacing: 0.28em; }
+.title { font-size: 18px; color: #f3fffb; margin: 0; }
+.hi { color: var(--gold); font-size: 12px; margin-top: 2px; letter-spacing: 0.08em; }
+.buttons { display: -webkit-box; display: -ms-flexbox; display: flex; gap: 8px; }
+.buttons a {
+  font: inherit;
+  color: var(--ink);
+  background: #123044;
+  border: 2px solid #4a7e93;
+  padding: 5px 9px;
+  font-size: 12px;
+  cursor: pointer;
+  box-shadow: 3px 3px 0 #04080d;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  display: inline-block;
+}
+.buttons a:hover, .buttons a:active { background: #1b455c; border-color: var(--cyan); }
+.hidden { display: none !important; }
+.hud-zhihu {
+  position: absolute;
+  z-index: 4;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: stretch;
+  -ms-flex-align: stretch;
+  align-items: stretch;
+  gap: 8px;
+  padding: 8px;
+  background: #0d202c;
+  border: 1px solid #315363;
+  box-shadow: 3px 3px 0 #04080d;
+  pointer-events: auto;
+  -webkit-user-select: text;
+  user-select: text;
+  min-width: 0;
+  overflow: hidden;
+}
+.hud-zhihu img {
+  display: block;
+  width: 34%;
+  max-width: 128px;
+  height: auto;
+  object-fit: cover;
+  object-position: center;
+  border: 1px solid #2a4a58;
+  background: #08141c;
+  -ms-flex-negative: 0;
+  flex-shrink: 0;
+}
+.hud-zhihu div {
+  min-width: 0;
+  -webkit-box-flex: 1;
+  -ms-flex: 1 1 auto;
+  flex: 1 1 auto;
+}
+.hud-zhihu h3 { font-size: 12px; color: var(--gold); margin: 0 0 4px; line-height: 1.35; }
+.hud-zhihu p { font-size: 11px; line-height: 1.45; margin: 0; color: #c2d9d5; }
+.hud-zhihu a.zhihu-link, a.zhihu-link {
+  display: inline-block;
+  margin-top: 6px;
+  color: #ffffff;
+  font-size: 11px;
+  text-decoration: none;
+  border-bottom: 1px solid #ffffff;
+  pointer-events: auto;
+}
+.hud-zhihu a.zhihu-link:hover, a.zhihu-link:hover { color: #ffffff; border-color: #ffffff; opacity: 0.85; }
+html.is-touch .hud-zhihu p,
+html.is-portrait .hud-zhihu p { display: none; }
+html.is-touch .hud-zhihu,
+html.is-portrait .hud-zhihu {
+  height: auto !important;
+  min-height: 0;
+  min-width: 0;
+  max-width: calc(100% - 12px);
+  overflow: hidden;
+  padding: 5px 6px;
+  gap: 6px;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+html.is-touch .hud-zhihu img,
+html.is-portrait .hud-zhihu img {
+  width: 32px;
+  max-width: 32px;
+  height: 32px;
+}
+html.is-touch .hud-zhihu h3,
+html.is-portrait .hud-zhihu h3 {
+  font-size: 11px;
+  margin: 0 0 2px;
+  line-height: 1.25;
+}
+html.is-touch .hud-zhihu a.zhihu-link,
+html.is-portrait .hud-zhihu a.zhihu-link {
+  margin-top: 0;
+  font-size: 11px;
+  line-height: 1.3;
+  padding: 0;
+  border-bottom-width: 1px;
+}
+@media (max-width: 720px) {
+  .hud-zhihu p { display: none; }
+  .hud-zhihu {
+    height: auto !important;
+    min-height: 0;
+    min-width: 0;
+    max-width: calc(100% - 12px);
+    overflow: hidden;
+    padding: 5px 6px;
+    gap: 6px;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+  }
+  .hud-zhihu img { width: 32px; max-width: 32px; height: 32px; }
+  .hud-zhihu h3 { font-size: 11px; margin: 0 0 2px; line-height: 1.25; }
+  .hud-zhihu a.zhihu-link { margin-top: 0; font-size: 11px; line-height: 1.3; padding: 0; border-bottom-width: 1px; }
+}
+.pad {
+  display: none;
+  background: var(--dock);
+  border-top: 1px solid #2c5c70;
+  padding: 10px 12px;
+  padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+}
+.pad-col { display: -webkit-box; display: -ms-flexbox; display: flex; gap: 8px; }
+.pad-btn { min-width: 72px; height: 52px; }
+html.is-portrait .pad, html.is-touch .pad {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+}
+html.is-portrait #app, html.is-touch #app { max-height: none; height: 100%; }
+</style>
+</head>
+<body>
+<main id="app">
+  <header class="hud-bar">
+    <div>
+      <div class="eyebrow">CRADLE BASE / PINBALL</div>
+      <h1 class="title">月球基地弹珠台</h1>
+      <div class="hi" id="hiScore">最高 0000000</div>
+    </div>
+    <div class="buttons">
+      <button type="button" class="small" id="restartBtn">再来一局</button>
+      <a href="./index.html" id="backBtn">返回首页</a>
+    </div>
+  </header>
+  <div id="stage">
+    <canvas id="view" width="960" height="540" aria-label="月球基地弹珠台"></canvas>
+    <article class="hud-zhihu" id="hudZhihu">
+      <img src="./assets/pinball/origin.jpg" alt="Win95 就有三维弹球">
+      <div>
+        <h3>Win95 就有三维弹球</h3>
+        <p>Windows XP 捆绑的《三维弹球》其实来自 95 Plus!。Cinematronics 用预渲染台面做了太空军校生。</p>
+        <a class="zhihu-link" href="https://zhuanlan.zhihu.com/p/26557268" target="_blank" rel="noopener noreferrer">知乎热门文章 · 游研社</a>
+      </div>
+    </article>
+  </div>
+  <div id="pad" class="pad" aria-label="触摸操作">
+    <div class="pad-col">
+      <button type="button" class="pad-btn" id="padLeft">左挡板</button>
+      <button type="button" class="pad-btn" id="padRight">右挡板</button>
+    </div>
+    <div class="pad-col">
+      <button type="button" class="pad-btn primary" id="padLaunch">发射</button>
+      <button type="button" class="pad-btn" id="padNudge">摇晃</button>
+    </div>
+  </div>
+</main>
+<script src="./pinball.js?v=zhihu-m2"></script>
+</body>
+</html>

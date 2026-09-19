@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>月球车探险</title>
+<link rel="icon" href="./index.icon.png" />
+<style>
+:root {
+  --ink: #e7fbf6;
+  --muted: #8aa8ad;
+  --cyan: #6fe8df;
+  --gold: #f4ca78;
+  --orange: #e8843a;
+  --app-height: 100vh;
+  --dock: #071018;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { height: 100%; touch-action: manipulation; }
+html, body {
+  height: 100%;
+  height: 100vh;
+  height: var(--app-height, 100vh);
+}
+body {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  background: #05080e;
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  user-select: none;
+}
+button {
+  font: inherit;
+  color: var(--ink);
+  background: #123044;
+  border: 2px solid #4a7e93;
+  padding: 9px 16px;
+  cursor: pointer;
+  box-shadow: 3px 3px 0 #04080d;
+  letter-spacing: 0.04em;
+  -webkit-appearance: none;
+  appearance: none;
+}
+button:active { opacity: 0.7; background: #1b455c; border-color: var(--cyan); }
+@media (hover: hover) {
+  button:hover { background: #1b455c; border-color: var(--cyan); }
+}
+button.primary { background: #17606b; border-color: var(--cyan); }
+button.small { padding: 5px 9px; font-size: 12px; }
+button.on { background: #17606b; border-color: var(--gold); color: var(--gold); }
+button:focus { outline: 2px solid var(--cyan); outline-offset: 2px; }
+.buttons a {
+  font: inherit;
+  color: var(--ink);
+  background: #123044;
+  border: 2px solid #4a7e93;
+  padding: 5px 9px;
+  font-size: 12px;
+  cursor: pointer;
+  box-shadow: 3px 3px 0 #04080d;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  display: inline-block;
+}
+.buttons a:hover, .buttons a:active { background: #1b455c; border-color: var(--cyan); }
+#app {
+  position: relative;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  max-width: 1120px;
+  max-height: 630px;
+  background: #070d16;
+  border: 3px solid #2a4556;
+  box-shadow: 0 0 0 4px #0a121b, 0 18px 50px rgba(0, 0, 0, 0.67);
+  overflow: hidden;
+}
+#stage {
+  position: relative;
+  -webkit-box-flex: 1;
+  -ms-flex: 1 1 auto;
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  background: #05080e;
+}
+canvas { display: block; width: 100%; height: 100%; }
+.hud-bar {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: rgba(6, 17, 29, 0.94);
+  border-bottom: 2px solid #2c5c70;
+  -ms-flex-negative: 0;
+  flex-shrink: 0;
+  z-index: 2;
+}
+.eyebrow { color: var(--cyan); font-size: 11px; letter-spacing: 0.28em; }
+.title { font-size: 18px; color: #f3fffb; margin: 0; }
+.hi { color: var(--gold); font-size: 12px; margin-top: 2px; letter-spacing: 0.08em; }
+.buttons { display: -webkit-box; display: -ms-flexbox; display: flex; gap: 8px; -ms-flex-wrap: wrap; flex-wrap: wrap; }
+.overlay {
+  position: absolute;
+  left: 12px;
+  right: auto;
+  top: 12px;
+  bottom: auto;
+  z-index: 3;
+  pointer-events: none;
+  max-width: 260px;
+  text-align: left;
+}
+.chip {
+  display: inline-block;
+  margin: 0 0 8px 8px;
+  padding: 7px 10px;
+  background: rgba(7, 20, 30, 0.72);
+  border: 1px solid #2c5c70;
+  font-size: 12px;
+  line-height: 1.45;
+  text-align: left;
+}
+.chip strong { color: var(--gold); }
+.mission {
+  max-width: 280px;
+  margin-left: auto;
+  padding: 8px 12px;
+  background: rgba(7, 20, 30, 0.72);
+  border: 1px solid #2c5c70;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #c2d9d5;
+  text-align: left;
+}
+.mission b { color: var(--cyan); }
+#toast {
+  position: absolute;
+  left: 50%;
+  bottom: 18px;
+  -webkit-transform: translateX(-50%);
+  transform: translateX(-50%);
+  z-index: 4;
+  max-width: 86%;
+  padding: 8px 12px;
+  background: rgba(23, 96, 107, 0.9);
+  border: 1px solid var(--gold);
+  color: #f3fffb;
+  font-size: 13px;
+  line-height: 1.5;
+  pointer-events: none;
+  opacity: 0;
+}
+#toast.show { opacity: 1; }
+.pad {
+  display: none;
+  background: var(--dock);
+  border-top: 1px solid #2c5c70;
+  padding: 10px 12px;
+  padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+  -webkit-box-pack: justify;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+}
+.pad-col { display: -webkit-box; display: -ms-flexbox; display: flex; gap: 8px; }
+.pad-btn { min-width: 64px; height: 52px; }
+html.is-portrait .pad, html.is-touch .pad {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+html.is-portrait #app, html.is-touch #app { max-height: none; height: 100%; }
+/* Let the landscape fill the screen; instruments sit lightly above it. */
+:root { --ink:#f3efe5; --muted:#a6b1b6; --cyan:#a6d8df; --gold:#f1c78e; }
+#app { max-width:none; max-height:none; border:0; box-shadow:none; }
+#stage { position:absolute; inset:0; }
+.hud-bar { position:absolute; top:0; left:0; right:0; border:0; padding:26px 32px;
+  background:linear-gradient(rgba(2,7,14,.84),rgba(2,7,14,0)); align-items:flex-start; }
+.eyebrow { color:#bdc8ce; font-size:10px; letter-spacing:.3em; margin-bottom:7px; }
+.title { font-size:23px; font-weight:500; letter-spacing:.15em; }
+.hi { font-size:10px; margin-top:8px; letter-spacing:.13em; color:#c3bcae; }
+.buttons { align-items:center; gap:5px; }
+button.small,.buttons a { border:1px solid rgba(210,216,212,.22); background:rgba(10,17,22,.48);
+  box-shadow:none; padding:9px 12px; border-radius:3px; font-size:11px; letter-spacing:.02em; }
+button.on { color:#f4d4a1; background:rgba(177,130,66,.18); border-color:rgba(232,187,121,.6); }
+button:hover,.buttons a:hover { background:rgba(100,116,126,.35); border-color:#bbc5c8; }
+.mission-label { font-size:9px; color:#abb8c1; letter-spacing:.15em; margin:0 7px 0 0; }
+.button-divider { width:1px; height:20px; background:#aab4bd33; margin:0 8px; }
+.overlay { top:133px; left:32px; max-width:253px; }
+.chip { display:none; }
+.mission { border:0; border-left:2px solid #d0ac77; padding:0 0 0 13px;
+  background:none; font-size:11px; line-height:1.8; color:#aeb9be; text-shadow:0 1px 5px #02060d; }
+.mission b { color:#f2e6d1; font-weight:500; font-size:13px; }
+.mission-caption { color:#b5a384; font-size:9px; letter-spacing:.17em; margin-bottom:6px; }
+.instruments { position:absolute; bottom:34px; right:34px; display:flex; align-items:center; gap:24px;
+  padding:17px 22px; border:1px solid #d5d9d025; border-radius:5px; background:rgba(7,13,17,.69);
+  backdrop-filter:blur(12px); color:#ddd9ce; pointer-events:none; }
+.metric-label { font-size:9px; color:#a2b0b5; letter-spacing:.16em; margin-bottom:6px; }
+.speed-value { font-family:Consolas,monospace; font-size:30px; font-weight:400; letter-spacing:-.05em; }
+.unit { font-size:10px; color:#a2b0b5; margin-left:7px; }
+.metric-small { font-size:18px; font-family:Consolas,monospace; }
+.navigation { display:flex; align-items:center; gap:13px; border-left:1px solid #b6c3c32a; padding-left:23px; }
+#bearing { display:block; width:25px; height:25px; color:#e4bd86; font-size:24px; text-align:center; }
+.controls-hint { position:absolute; bottom:34px; left:32px; font-size:10px; color:#dddcd0;
+  line-height:2; letter-spacing:.05em; text-shadow:0 1px 5px #000; pointer-events:none; }
+.controls-hint kbd { border:1px solid #c7cdc344; padding:2px 5px; border-radius:3px; margin:0 3px 0 8px; background:#0c151848; }
+.controls-hint kbd:first-child { margin-left:0; }
+.controls-hint small { color:#b9c4c8; font-size:9px; letter-spacing:.12em; }
+#toast { bottom:144px; background:rgba(10,22,29,.91); border:1px solid #dac39866; border-radius:4px; }
+.pad { position:absolute; bottom:0; left:0; right:0; z-index:5; background:linear-gradient(transparent,#071018bb); border:0; }
+.pad-btn { background:#0b1922bb; border:1px solid #b8cacc55; border-radius:6px; box-shadow:none; touch-action:none; }
+#photoExit { display:none; position:absolute; top:20px; right:20px; z-index:8; }
+.photo-mode .hud-bar,.photo-mode .overlay,.photo-mode .instruments,.photo-mode .controls-hint,.photo-mode #toast { display:none; }
+.photo-mode #photoExit { display:block; opacity:.5; }
+.photo-mode #photoExit:hover { opacity:1; }
+.webgl-error { color:#efe9d8; margin:20vh auto; width:90%; max-width:480px; line-height:2; }
+.webgl-error a { color:#a6d8df; }
+@media(max-width:760px) {
+  .hud-bar { padding:18px; gap:14px; }
+  .title { font-size:18px; } .eyebrow { font-size:8px; } .hi { max-width:160px; font-size:8px; line-height:1.5; }
+  .buttons { max-width:210px; justify-content:flex-end; gap:4px; }
+  .buttons a,button.small { padding:7px 9px; font-size:10px; }
+  .mission-label,.button-divider { display:none; }
+  .overlay { top:140px; left:18px; max-width:210px; }
+  #spotText { display:none; } .mission br { display:none; }
+  .instruments { bottom:97px; right:16px; left:16px; justify-content:space-between; padding:12px 15px; gap:10px; }
+  .controls-hint { display:none; } .speed-value { font-size:24px; }
+  .pad-btn { min-width:55px; height:46px; font-size:12px; }
+  .pad-col { gap:6px; } #toast { bottom:181px; font-size:11px; }
+}
+@media(pointer:coarse) and (min-width:761px) { .instruments { bottom:94px; } .controls-hint { display:none; } }
+@media(max-height:520px) {
+  .overlay { top:110px; } #spotText { display:none; } .hud-bar { padding:14px 20px; }
+  .instruments { padding:9px 13px; gap:15px; right:18px; bottom:84px; }
+  .speed-value { font-size:22px; } .metric-small { font-size:15px; } .metric-label { font-size:8px; }
+  .navigation { padding-left:12px; gap:9px; } #toast { bottom:145px; font-size:11px; }
+}
+</style>
+<link rel="stylesheet" href="./rover-codex.css?v=1" />
+</head>
+<body>
+<main id="app">
+  <header class="hud-bar">
+    <div>
+      <div class="eyebrow">LUNAR EXPEDITION / 01</div>
+      <h1 class="title">月球车探险</h1>
+      <div class="hi" id="hiLine">阿波罗 15 · 哈德利–亚平宁</div>
+    </div>
+    <div class="buttons">
+      <span class="mission-label">APOLLO</span>
+      <button type="button" class="small on" id="m15">15</button>
+      <button type="button" class="small" id="m16">16</button>
+      <button type="button" class="small" id="m17">17</button>
+      <span class="button-divider"></span>
+      <button type="button" class="small" id="codexBtn" title="J 打开月面图鉴">图鉴 <span id="codexCount">0/10</span></button>
+      <button type="button" class="small" id="cameraBtn" title="C 切换视角">全景视角</button>
+      <button type="button" class="small" id="photoBtn" title="H 隐藏界面" aria-pressed="false">纯净画面</button>
+      <button type="button" class="small" id="restartBtn">重新出发</button>
+      <a href="./index.html" id="backBtn">返回首页</a>
+    </div>
+  </header>
+  <div id="stage">
+    <canvas id="view" aria-label="月球车探险"></canvas>
+    <div class="overlay">
+      <div class="mission"><div class="mission-caption">SURVEY OBJECTIVE</div><b id="spotTitle">当前任务</b><br><span id="spotText">驾驶月球车，抵达三处真实巡视点。</span></div>
+    </div>
+    <div class="instruments">
+      <div><div class="metric-label">航速 / SPEED</div><strong class="speed-value" id="spd">00</strong><span class="unit">km/h</span></div>
+      <div><div class="metric-label">采样 / SAMPLES</div><span class="metric-small" id="samp">0/3</span></div>
+      <div class="navigation"><span id="bearing">↑</span><div><div class="metric-label">下一站</div><span class="metric-small" id="distance">—</span></div></div>
+    </div>
+    <div class="controls-hint"><kbd>W A S D</kbd> 驾驶 <kbd>E</kbd> 阅读 <kbd>J</kbd> 图鉴 <kbd>C</kbd> 视角 <kbd>H</kbd> 隐藏界面<br><small>月面幻想 · 阿波罗科考之旅</small></div>
+    <button type="button" id="nearbyCodex" hidden></button>
+    <button type="button" class="small" id="photoExit">恢复界面 · H</button>
+    <div id="toast"></div>
+  </div>
+  <div id="pad" class="pad" aria-label="触摸驾驶">
+    <div class="pad-col">
+      <button type="button" class="pad-btn" data-hold="a">左转</button>
+      <button type="button" class="pad-btn" data-hold="d">右转</button>
+    </div>
+    <div class="pad-col">
+      <button type="button" class="pad-btn primary" data-hold="w">前进</button>
+      <button type="button" class="pad-btn" data-hold="s">刹车</button>
+    </div>
+  </div>
+</main>
+<dialog id="roverCodexDialog" aria-labelledby="roverCodexTitle" aria-describedby="roverCodexSubtitle">
+  <header class="codex-header">
+    <div><div class="codex-eyebrow">LUNAR FIELD NOTES / 知乎</div><h2 id="roverCodexTitle">月面探索图鉴</h2><p id="roverCodexSubtitle"></p></div>
+    <button type="button" id="roverCodexClose" aria-label="关闭图鉴" autofocus>×</button>
+  </header>
+  <nav id="roverCodexFilters" aria-label="筛选图鉴">
+    <button type="button" data-filter="all" aria-pressed="true">全部</button>
+    <button type="button" data-filter="unlocked" aria-pressed="false">已收录</button>
+    <button type="button" data-filter="15" aria-pressed="false">阿波罗 15</button>
+    <button type="button" data-filter="16" aria-pressed="false">阿波罗 16</button>
+    <button type="button" data-filter="17" aria-pressed="false">阿波罗 17</button>
+    <button type="button" data-filter="0" aria-pressed="false">星空观测</button>
+  </nav>
+  <div id="roverCodexBody"></div>
+  <footer class="codex-footer"><p id="roverCodexNotice"></p><button type="button" id="roverCodexResume">继续驾驶</button></footer>
+</dialog>
+<div id="codexAnnouncement" aria-live="polite" style="position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);"></div>
+<script src="./vendor/three.min.js"></script>
+<script src="./rover-render.js?v=lrv30"></script>
+<script src="./rover-codex-data.js?v=1"></script>
+<script src="./rover-codex.js?v=1"></script>
+<script src="./rover.js?v=lrv31"></script>
+</body>
+</html>
