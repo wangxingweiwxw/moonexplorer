@@ -260,6 +260,20 @@ button:hover,.buttons a:hover { background:rgba(100,116,126,.35); border-color:#
   .speed-value { font-size:22px; } .metric-small { font-size:15px; } .metric-label { font-size:8px; }
   .navigation { padding-left:12px; gap:9px; } #toast { bottom:145px; font-size:11px; }
 }
+@supports (height: 100dvh) { :root { --app-height: 100dvh; } }
+.pad {
+  padding-left: calc(12px + env(safe-area-inset-left, 0px));
+  padding-right: calc(12px + env(safe-area-inset-right, 0px));
+}
+.pad-col { min-width: 0; }
+@media (max-width: 480px) {
+  html.is-portrait .pad, html.is-touch .pad {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+  }
+  .pad-btn { flex: 1 1 0; min-width: 0; padding: 9px 4px; }
+}
 </style>
 <link rel="stylesheet" href="./rover-codex.css?v=1" />
 </head>
@@ -331,6 +345,6 @@ button:hover,.buttons a:hover { background:rgba(100,116,126,.35); border-color:#
 <script src="./rover-render.js?v=lrv30"></script>
 <script src="./rover-codex-data.js?v=1"></script>
 <script src="./rover-codex.js?v=1"></script>
-<script src="./rover.js?v=lrv31"></script>
+<script src="./rover.js?v=mobile-pad-1"></script>
 </body>
 </html>

@@ -831,14 +831,20 @@ function bindHold(el, name) {
   el.addEventListener("pointercancel", up);
 }
 function layout() {
-  const touch = window.matchMedia("(pointer: coarse)").matches || "ontouchstart" in window;
-  document.documentElement.classList.toggle("is-touch", touch);
-  document.documentElement.classList.toggle("is-portrait", window.innerHeight > window.innerWidth);
+  const touch = window.matchMedia("(any-pointer: coarse)").matches || navigator.maxTouchPoints > 0 || "ontouchstart" in window;
+  const viewport = window.visualViewport;
+  const width = viewport && viewport.width || window.innerWidth;
+  const height = viewport && viewport.height || window.innerHeight;
+  const root = document.documentElement;
+  root.classList.toggle("is-touch", touch);
+  root.classList.toggle("is-portrait", height > width);
+  root.style.setProperty("--app-height", height + "px");
   placeZhihuCard();
 }
 function bind() {
   layout();
   window.addEventListener("resize", layout);
+  if (window.visualViewport) window.visualViewport.addEventListener("resize", layout);
   requestAnimationFrame(placeZhihuCard);
   window.addEventListener("keydown", function (e) {
     if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", " "].includes(e.key)) e.preventDefault();
