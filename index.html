@@ -737,6 +737,48 @@ html.is-portrait .modal { width: 94%; max-height: 86%; padding: 14px; }
   .chip { font-size: 11px; padding: 4px 6px; }
   .oxygen { min-width: 0; }
 }
+/* Keep controls inside notched screens and let the HUD grow when menus wrap. */
+body {
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+}
+html.is-portrait .hud {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px;
+}
+html.is-portrait .topbar {
+  position: relative;
+  inset: auto;
+  flex-shrink: 0;
+}
+html.is-portrait .top-actions {
+  flex-basis: 100%;
+  justify-content: flex-end;
+  margin: 0;
+}
+html.is-portrait .mission {
+  position: relative;
+  inset: auto;
+  flex-shrink: 0;
+  width: 100%;
+}
+html.is-portrait .pad {
+  display: grid;
+  grid-template-columns: 2fr 2fr 1.2fr;
+  gap: 8px;
+  padding-left: 8px;
+  padding-right: 8px;
+}
+html.is-portrait .pad-col { min-width: 0; }
+html.is-portrait .pad-btn,
+html.is-portrait .pad-btn.jump {
+  flex: 1 1 0;
+  width: 100%;
+  min-width: 0;
+}
+html.is-portrait .pad-stack .pad-btn { flex: none; }
 </style>
 </head>
 <body>
