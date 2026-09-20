@@ -3,7 +3,7 @@ window.RoverCodex = (() => {
   'use strict';
   const DATA=window.ROVER_CODEX_DATA, cards=DATA.cards;
   const byId=new Map(cards.map(c=>[c.id,c]));
-  const SAVE_KEY='moonexplorer-rover-codex-v1';
+  const SAVE_KEY=DATA.saveKey||'moonexplorer-rover-codex-v1';
   let unlocked=new Set(),canSave=true,near=null,filter='all',returnFocus=null,onPause=()=>{};
   let dialog,body,heading,subtitle,filters,notice;
   const $=id=>document.getElementById(id);
@@ -16,6 +16,10 @@ window.RoverCodex = (() => {
       const raw=JSON.parse(localStorage.getItem(SAVE_KEY)||'null');
       const ids=raw&&Array.isArray(raw.unlocked)?raw.unlocked:[];
       unlocked=new Set(ids.filter(id=>byId.has(id)));
+      if(DATA.importSaveKey){
+        const previous=JSON.parse(localStorage.getItem(DATA.importSaveKey)||'null');
+        if(Array.isArray(previous?.unlocked))previous.unlocked.filter(id=>byId.has(id)).forEach(id=>unlocked.add(id));
+      }
     } catch (_) { unlocked=new Set(); }
   }
   function persist() {
@@ -71,7 +75,7 @@ window.RoverCodex = (() => {
       const content=el('div','codex-card-content');
       content.append(el('span','codex-badge'+(c.kind==='hot'?' hot':''),sourceBadge(c)));
       content.append(el('h3','',c.title));
-      content.append(el('p','codex-location',(c.mission?'阿波罗 '+c.mission+' · ':'')+c.location));
+      content.append(el('p','codex-location',(c.missionName?c.missionName+' · ':c.mission?'阿波罗 '+c.mission+' · ':'')+c.location));
       content.append(el('p','codex-card-topic',got?c.topic:'抵达此处，收录对应知乎话题'));
       content.append(el('span','codex-card-state',got?'已收录 · 阅读档案 ↗':'尚未收录'));
       button.append(content);card.append(button);grid.append(card);
@@ -80,7 +84,7 @@ window.RoverCodex = (() => {
   }
   function showCard(id) {
     const c=byId.get(id);if(!c||!unlocked.has(id))return;
-    heading.textContent=c.title;subtitle.textContent=(c.mission?'阿波罗 '+c.mission+' · ':'')+c.location;
+    heading.textContent=c.title;subtitle.textContent=(c.missionName?c.missionName+' · ':c.mission?'阿波罗 '+c.mission+' · ':'')+c.location;
     filters.hidden=true;body.replaceChildren();
     const back=el('button','codex-back','← 全部图鉴');back.type='button';back.onclick=renderGallery;
     const article=el('article','codex-detail');article.append(image(c,true));
@@ -89,9 +93,14 @@ window.RoverCodex = (() => {
     text.append(el('h3','codex-topic',c.topic));
     text.append(el('p','codex-summary',c.summary));
     text.append(el('p','codex-credit',(c.answerUrl?'参考回答':'内容作者')+' · '+c.author));
+    if(Number.isFinite(c.votes))text.append(el('p','codex-credit',c.votes+' 赞同 · 检索时快照'));
+    if(c.factNote)text.append(el('p','codex-summary',c.factNote));
     const links=el('div','codex-links');links.append(link(c.kind==='hot'?'在知乎查看话题 ↗':'在知乎阅读原文 ↗',c.url,true));
     if(c.answerUrl)links.append(link('阅读参考回答 ↗',c.answerUrl,false));
     text.append(links);
+    if(c.referenceUrl&&/^https:\/\/(www\.nasa\.gov|science\.nasa\.gov|nssdc\.gsfc\.nasa\.gov|www\.cnsa\.gov\.cn|www\.isro\.gov\.in)\//.test(c.referenceUrl)){
+      const reference=el('a','codex-source',c.referenceLabel||'NASA 任务资料 ↗');reference.href=c.referenceUrl;reference.target='_blank';reference.rel='noopener noreferrer';text.append(reference);
+    }
     text.append(el('p','codex-source-note',c.kind==='hot'?'收录于 '+c.retrievedAt+' 的热榜快照；热度与讨论可能变化。简介为阅读导览。':'根据知乎检索摘要整理的阅读导览，完整论述请查看原文。检索于 '+c.retrievedAt+'。'));
     article.append(text);body.append(back,article);open();
   }

@@ -315,6 +315,7 @@ canvas {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
+  flex-wrap: wrap;
   -webkit-box-align: center;
   -ms-flex-align: center;
   align-items: center;
@@ -804,7 +805,7 @@ html.is-portrait .pad-stack .pad-btn { flex: none; }
           </span>
         </div>
         <div class="gate-panel" id="gate3d">
-          <img id="preview3d" alt="3D 体素预览：宇航员、刘看山与月球车" src="./assets/preview-3d.png">
+          <img id="preview3d" alt="3D 体素预览：宇航员、北极狐与月球车" src="./assets/preview-3d.png">
           <a href="./play3d.html?play=1" id="enter3d" class="gate-click" aria-label="进入 3D 体素探险"></a>
           <a href="./rover.html" id="enterRover" class="rover-hotspot" aria-label="进入月球车探险">
             <span class="hotspot-glow"></span>
@@ -815,6 +816,7 @@ html.is-portrait .pad-stack .pad-btn { flex: none; }
             <span class="gate-actions">
               <span class="gate-hint">点击进入</span>
               <a href="./rover.html" class="gate-sub" id="enterRoverChip">月球车</a>
+              <a href="./roam.html" class="gate-sub" id="enterRoamChip">全月漫游</a>
             </span>
           </span>
         </div>
@@ -846,7 +848,7 @@ html.is-portrait .pad-stack .pad-btn { flex: none; }
             <button type="button" class="small" id="pauseBtn">菜单</button>
           </div>
         </div>
-        <div class="mission"><b>当前任务</b><br><span id="missionText">跟随刘看山，扫描月面档案并校准第一台设备。</span></div>
+        <div class="mission"><b>当前任务</b><br><span id="missionText">跟随北极狐，扫描月面档案并校准第一台设备。</span></div>
         <div id="talk" class="talk hidden"></div>
         <div id="toast"></div>
       </div>
@@ -868,6 +870,6 @@ html.is-portrait .pad-stack .pad-btn { flex: none; }
   </div>
   <section id="modal" class="screen modal-back hidden"><div class="modal" id="modalBody"></div></section>
 </main>
-<script src="./game.js"></script>
+<script src="./game.js?v=arctic-fox-1"></script>
 </body>
 </html>

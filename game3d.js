@@ -317,7 +317,7 @@ function sceneUnlocked(id) {
 function switchScene(i, fromMap) {
   const next = SCENES[(i + SCENES.length) % SCENES.length];
   if (!fromMap && next.unlock && next.unlock !== "free" && !save.solved.includes(next.unlock)) {
-    speak("刘看山", "气闸还锁着。先完成本区设备校准。");
+    speak("北极狐", "气闸还锁着。先完成本区设备校准。");
     toast("需要先修复当前区域设备");
     return;
   }
@@ -356,7 +356,7 @@ function startGame() {
   playBgm(sceneIndex === 0 ? "explore" : "base");
   if (!save.intro) {
     save.intro = true; persist();
-    speak("刘看山", "巡检开始。坑洞有辐射，落点要准。空中再按一次跳跃可二段跳——校准月壤台后我会帮你解锁。");
+    speak("北极狐", "巡检开始。坑洞有辐射，落点要准。空中再按一次跳跃可二段跳——校准月壤台后我会帮你解锁。");
   }
   requestAnimationFrame(loop);
 }
@@ -443,7 +443,7 @@ function unlockCard(id, bonus) {
   const c = CARDS.find((x) => x.id === id);
   toast("档案解锁：" + c.title + "  +" + g);
   sfx("pickup"); burst(player.x+20, player.y, "#f4ca78", 10);
-  if (save.cards.length === CARDS.length) { sfx("win"); speak("刘看山", "图鉴齐了。这些数据会替月球讲很久。"); }
+  if (save.cards.length === CARDS.length) { sfx("win"); speak("北极狐", "图鉴齐了。这些数据会替月球讲很久。"); }
   return true;
 }
 
@@ -451,20 +451,20 @@ function grantAbility(key, title, line) {
   if (save.abilities[key]) return;
   save.abilities[key] = true; persist(); updateHUD();
   toast("能力解锁：" + title);
-  speak("刘看山", line);
+  speak("北极狐", line);
   sfx("win"); shakeCam(8);
 }
 
 function interact() {
   const e = nearEnemy();
   if (e && e.armor) { openArmor(e); return; }
-  if (e && !e.armor) { speak("刘看山", "护甲已开。踩到它头顶，或按 R 发射射线。"); return; }
+  if (e && !e.armor) { speak("北极狐", "护甲已开。踩到它头顶，或按 R 发射射线。"); return; }
   const n = nearby();
-  if (!n) { speak("刘看山", "往闪光点和移动平台走。高台常藏着档案。"); return; }
+  if (!n) { speak("北极狐", "往闪光点和移动平台走。高台常藏着档案。"); return; }
   if (n.type === "exit") { switchScene(n.to, false); return; }
   if (n.type === "oxygen") {
     save.oxygen = 100; persist(); updateHUD(); toast("氧气已补满"); sfx("ok");
-    speak("刘看山", "补满了。辐射裂隙会加快消耗，尽量跳过去。");
+    speak("北极狐", "补满了。辐射裂隙会加快消耗，尽量跳过去。");
     return;
   }
   if (n.type === "checkpoint") {
@@ -472,7 +472,7 @@ function interact() {
     save.spawn = {scene:scene.id, x:placed.x, y:placed.y};
     if (!save.checks.includes(scene.id)) save.checks.push(scene.id);
     persist(); toast("检查点已同步"); sfx("ok");
-    speak("刘看山", "坐标已记下。掉下去我会把你拉回这里。");
+    speak("北极狐", "坐标已记下。掉下去我会把你拉回这里。");
     return;
   }
   if (n.type === "card") {
@@ -495,7 +495,7 @@ function finishPuzzle(node, msg) {
   hitCombo(800); persist(); updateHUD(); sfx("win"); shakeCam(10);
   if (scene.id === "surface") grantAbility("djump", "低重力连跳", "空中再按 SPACE，第二次起跳。月球重力只有地球六分之一。");
   if (scene.id === "base") grantAbility("dash", "喷气短突", "按 SHIFT 向前喷气，用来过裂隙。月尘里燃料很金贵，有冷却。");
-  if (scene.id === "observatory") grantAbility("scan", "广域扫描", "射线变长，隐藏晶体会闪。刘看山也能标出下一处目标。");
+  if (scene.id === "observatory") grantAbility("scan", "广域扫描", "射线变长，隐藏晶体会闪。北极狐也能标出下一处目标。");
   openModal("<h2>校准完成</h2><p>"+msg+"</p><p>新能力已写入你的舱外装。</p><div class='foot'><button class='primary' id='closeM'>继续巡检</button></div>");
   $("closeM").onclick = closeModal;
 }
@@ -545,7 +545,7 @@ function renderAirlock(node) {
   paint();
 }
 function renderPhase(node) {
-  openModal("<h2>月相对准仪</h2><div class='help'>月球本身不发光，只反射阳光。地球上看到的月相，取决于太阳、地球、月球的相对位置。<br><strong>上弦月</strong>：右半边亮、左半边暗（北半球常见画法）。请点选正确的那一张。</div><div class='phases'><button data-ok='0'><span class='moon'>🌕</span>满月</button><button data-ok='1'><span class='moon'>🌓</span>上弦月</button><button data-ok='0'><span class='moon'>🌑</span>新月</button><button data-ok='0'><span class='moon'>🌗</span>下弦月</button></div><p id='pstat'>刘看山：亮面在右边的是上弦。</p><div class='foot'><button id='cancelM'>取消</button></div>");
+  openModal("<h2>月相对准仪</h2><div class='help'>月球本身不发光，只反射阳光。地球上看到的月相，取决于太阳、地球、月球的相对位置。<br><strong>上弦月</strong>：右半边亮、左半边暗（北半球常见画法）。请点选正确的那一张。</div><div class='phases'><button data-ok='0'><span class='moon'>🌕</span>满月</button><button data-ok='1'><span class='moon'>🌓</span>上弦月</button><button data-ok='0'><span class='moon'>🌑</span>新月</button><button data-ok='0'><span class='moon'>🌗</span>下弦月</button></div><p id='pstat'>北极狐：亮面在右边的是上弦。</p><div class='foot'><button id='cancelM'>取消</button></div>");
   $("cancelM").onclick = closeModal;
   document.querySelectorAll(".phases button").forEach((b)=>{
     b.onclick = () => {
@@ -556,7 +556,7 @@ function renderPhase(node) {
 }
 function hashId(s) { let h = 2166136261; for (let i=0;i<s.length;i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return Math.abs(h); }
 function armorDone(en) {
-  en.armor = false; toast("护甲已断开"); speak("刘看山", "踩它头顶，或按 R 发射科学射线。"); sfx("win"); closeModal();
+  en.armor = false; toast("护甲已断开"); speak("北极狐", "踩它头顶，或按 R 发射科学射线。"); sfx("win"); closeModal();
 }
 function openArmor(en) {
   const kinds = ["colors","breach","pipes","memory","pairs"];
@@ -725,11 +725,11 @@ function openBriefing() {
     "<div class='brief'>" +
     "<h2>作品简介</h2>" +
     "<h3>技术细节</h3>" +
-    "<p>本作是一款可离线打开的网页科考游戏：整包只有 HTML、CSS、JavaScript 和图片，不装客户端、不连服务器、不登录账号，也没有广告和内购，双击本地页面或挂到静态托管就能玩。操作是键盘 WASD 移动、空格跳跃、SHIFT 喷气、E 交互、R 发射科学射线，手机用底部虚拟键。主画面是 WebGL 第三人称 3D：碰撞、氧气、存档和谜题仍按原横板关卡结算，镜头斜后方跟随，看得见你和刘看山。手感带土狼时间、跳跃缓冲、按住可跳得更高，校准设备后才会写入二段跳与短突。角色用简单几何体贴像素图，场景由平台挤出的月壤方块搭成。背景音乐和音效全部由 Web Audio 在设备里合成。探索进度写入浏览器 localStorage。默认入口是 2D 像素主页 index.html，本页为 3D 选项。</p>" +
+    "<p>本作是一款可离线打开的网页科考游戏：整包只有 HTML、CSS、JavaScript 和图片，不装客户端、不连服务器、不登录账号，也没有广告和内购，双击本地页面或挂到静态托管就能玩。操作是键盘 WASD 移动、空格跳跃、SHIFT 喷气、E 交互、R 发射科学射线，手机用底部虚拟键。主画面是 WebGL 第三人称 3D：碰撞、氧气、存档和谜题仍按原横板关卡结算，镜头斜后方跟随，看得见你和北极狐。手感带土狼时间、跳跃缓冲、按住可跳得更高，校准设备后才会写入二段跳与短突。角色用简单几何体贴像素图，场景由平台挤出的月壤方块搭成。背景音乐和音效全部由 Web Audio 在设备里合成。探索进度写入浏览器 localStorage。默认入口是 2D 像素主页 index.html，本页为 3D 选项。</p>" +
     "<h3>三大关卡</h3>" +
-    "<p>近未来，人类在月球建起模块化「摇篮科研基地」。你是新晋科考队员，刘看山与你同行，三条航线必须按顺序校准：当前区设备未修好，下一区气闸保持锁定；已经开通的航线可以随时从航线图快速转移。第一关月面荒野是开阔的巡检带，地面裂开三处辐射坑，中间有横向移动平台，沿途有便携补氧柱、荒野检查点和巡视车残骸；你要先在月壤管路台接通管路，气闸才会放行进入基地，并解锁低重力连跳——空中再按一次空格，才能上到直径测绘桩、重力演示器、月海成像仪和更远处的环形山标尺。第二关摇篮基地走廊改在密封舱段里行进，既有上下升降台也有左右滑台，热控窗和气闸铭牌夹在辐射缝之间；把气闸均压台的舱压稳定在大约四十到六十千帕的安全区间后，观测站航线才会打开，同时解锁喷气短突，按 SHIFT 向前短促推进，用来越过裂隙，月尘里燃料金贵，因此带冷却。第三关天文观测站台架在高台与望远镜之间，悬停干扰体更多，末段还有一具更硬的主干扰体；对准月相对准仪上的上弦月后，科学射线变长，隐藏晶体会发亮，刘看山也会标出下一处目标，收齐站台上的潮汐、地轴和测距档案后，可以从气闸返回月面，开始下一轮巡检。</p>" +
+    "<p>近未来，人类在月球建起模块化「摇篮科研基地」。你是新晋科考队员，北极狐与你同行，三条航线必须按顺序校准：当前区设备未修好，下一区气闸保持锁定；已经开通的航线可以随时从航线图快速转移。第一关月面荒野是开阔的巡检带，地面裂开三处辐射坑，中间有横向移动平台，沿途有便携补氧柱、荒野检查点和巡视车残骸；你要先在月壤管路台接通管路，气闸才会放行进入基地，并解锁低重力连跳——空中再按一次空格，才能上到直径测绘桩、重力演示器、月海成像仪和更远处的环形山标尺。第二关摇篮基地走廊改在密封舱段里行进，既有上下升降台也有左右滑台，热控窗和气闸铭牌夹在辐射缝之间；把气闸均压台的舱压稳定在大约四十到六十千帕的安全区间后，观测站航线才会打开，同时解锁喷气短突，按 SHIFT 向前短促推进，用来越过裂隙，月尘里燃料金贵，因此带冷却。第三关天文观测站台架在高台与望远镜之间，悬停干扰体更多，末段还有一具更硬的主干扰体；对准月相对准仪上的上弦月后，科学射线变长，隐藏晶体会发亮，北极狐也会标出下一处目标，收齐站台上的潮汐、地轴和测距档案后，可以从气闸返回月面，开始下一轮巡检。</p>" +
     "<h3>揭秘设置</h3>" +
-    "<p>揭秘分成两条线，一条是发给地球的真实月学档案，一条是关掉失控探测单元的护甲锁。沿途十八张图鉴全部对应真实常识，靠近终端按 E 收录：月面荒野讲月球直径约三千四百七十四千米、质量约为地球八十一分之一、表面重力约六分之一，以及月海其实是冷却熔岩平原、月陆是更古老的高地、环形山由撞击留下、月壤里有碎石玻璃微珠和太阳风粒子；摇篮基地讲真空里声音无法传播、白天可超过一百摄氏度而夜晚可到零下约一百七十度、潮汐力与内部冷却都会引发月震，还有月尘磨损、辐射屏蔽、氧气循环与光谱仪测距仪月震仪的工作原理；天文观测站讲潮汐锁定让地球总看见同一面、月相是阳光反射的视觉效果、地月互拉形成潮汐、背对月球的一侧也会有高潮、月球稳住地球自转轴并分担撞击，以及地月平均约三十八万四千千米、光走一趟大约一点三秒。另一条线是干扰体：它们或沿地面巡逻或在高台悬停，默认带着护甲，必须先靠近按 E，按个体揭开不同的锁——色码排列、入侵协议指令序列、管路接通、记忆翻牌或两两配对——锁解开后才能踩头或按 R 发射科学射线将其关闭；观测站校准后射线更长，主干扰体还要打多次核心。晶体散落在平台与高台上，扫描能力开启后会闪，检查点会记下你的落点，氧气不足或落入辐射坑会回到最近的安全位置，刘看山会在护甲、校准和跳台处给出简短提示。</p>" +
+    "<p>揭秘分成两条线，一条是发给地球的真实月学档案，一条是关掉失控探测单元的护甲锁。沿途十八张图鉴全部对应真实常识，靠近终端按 E 收录：月面荒野讲月球直径约三千四百七十四千米、质量约为地球八十一分之一、表面重力约六分之一，以及月海其实是冷却熔岩平原、月陆是更古老的高地、环形山由撞击留下、月壤里有碎石玻璃微珠和太阳风粒子；摇篮基地讲真空里声音无法传播、白天可超过一百摄氏度而夜晚可到零下约一百七十度、潮汐力与内部冷却都会引发月震，还有月尘磨损、辐射屏蔽、氧气循环与光谱仪测距仪月震仪的工作原理；天文观测站讲潮汐锁定让地球总看见同一面、月相是阳光反射的视觉效果、地月互拉形成潮汐、背对月球的一侧也会有高潮、月球稳住地球自转轴并分担撞击，以及地月平均约三十八万四千千米、光走一趟大约一点三秒。另一条线是干扰体：它们或沿地面巡逻或在高台悬停，默认带着护甲，必须先靠近按 E，按个体揭开不同的锁——色码排列、入侵协议指令序列、管路接通、记忆翻牌或两两配对——锁解开后才能踩头或按 R 发射科学射线将其关闭；观测站校准后射线更长，主干扰体还要打多次核心。晶体散落在平台与高台上，扫描能力开启后会闪，检查点会记下你的落点，氧气不足或落入辐射坑会回到最近的安全位置，北极狐会在护甲、校准和跳台处给出简短提示。</p>" +
     "<div class='foot'><button class='primary' id='closeM'>返回</button></div></div>"
   );
   $("closeM").onclick = closeModal;
@@ -1481,7 +1481,7 @@ function disableEnemy(e) {
     const g = hitCombo(e.kind==="boss"?900:400);
     persist(); updateHUD();
     pop(e.x, e.y, "+"+g); toast((e.kind==="boss"?"主干扰体":"干扰体")+"已关闭  +"+g);
-    speak("刘看山", e.kind==="boss"?"主单元关闭。观测站可以安静下来了。":"关闭完成。它只是失控探测单元。");
+    speak("北极狐", e.kind==="boss"?"主单元关闭。观测站可以安静下来了。":"关闭完成。它只是失控探测单元。");
   }
 }
 
@@ -1492,7 +1492,7 @@ function shoot() {
     if (e.dead) continue;
     const along = (e.x - player.x) * player.face;
     if (along > 0 && along < reach && Math.abs(e.y - player.y) < 70) {
-      if (e.armor) { speak("刘看山", "护甲还在。先按 E。"); return; }
+      if (e.armor) { speak("北极狐", "护甲还在。先按 E。"); return; }
       disableEnemy(e); return;
     }
   }
@@ -1617,7 +1617,7 @@ function move(dt) {
     if (player.x+player.w>h.x && player.x<h.x+h.w && player.y+player.h>h.y-20) drain += 1.1;
   }
   save.oxygen = clamp(save.oxygen - drain*dt, 0, 100);
-  if (save.oxygen <= 0) { save.oxygen = 50; respawn("氧气耗尽，已返回补给点"); speak("刘看山", "第一课：永远给返回留余量。"); }
+  if (save.oxygen <= 0) { save.oxygen = 50; respawn("氧气耗尽，已返回补给点"); speak("北极狐", "第一课：永远给返回留余量。"); }
 
   for (const c of scene.crystals) {
     const id = scene.id+":c"+c[0];
@@ -1665,9 +1665,9 @@ function move(dt) {
     hintTick = 0;
     const e = nearEnemy();
     const n = nearby(120);
-    if (e && e.armor) speak("刘看山", "先解护甲锁，再踩头或射击。");
-    else if (n && n.type === "puzzle" && !save.solved.includes(scene.id)) speak("刘看山", "校准这台，能解锁新机动。");
-    else if (!save.abilities.djump) speak("刘看山", "高台够不着就找移动平台，或先去修月壤分析台。");
+    if (e && e.armor) speak("北极狐", "先解护甲锁，再踩头或射击。");
+    else if (n && n.type === "puzzle" && !save.solved.includes(scene.id)) speak("北极狐", "校准这台，能解锁新机动。");
+    else if (!save.abilities.djump) speak("北极狐", "高台够不着就找移动平台，或先去修月壤分析台。");
   }
 }
 
