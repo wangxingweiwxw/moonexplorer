@@ -687,34 +687,6 @@ function cardPhotoHtml(c, kind) {
   return "<img class='"+cls+"' src='assets/codex/"+c.id+".jpg' alt='"+c.title+"' loading='lazy'>";
 }
 
-function handleZhihuLogin() {
-  if (window.ZhihuOAuth.isLoggedIn()) {
-    const user = window.ZhihuOAuth.getUserInfo();
-    const confirmed = confirm("您已登录知乎账号：" + user.name + "\n\n是否退出登录？");
-    if (confirmed) {
-      window.ZhihuOAuth.logout();
-      updateZhihuLoginButton();
-      alert("已退出知乎登录");
-    }
-  } else {
-    window.ZhihuOAuth.startAuth();
-  }
-}
-
-function updateZhihuLoginButton() {
-  const btn = $("zhihuLoginBtn");
-  if (!btn) return;
-
-  if (window.ZhihuOAuth && window.ZhihuOAuth.isLoggedIn()) {
-    const user = window.ZhihuOAuth.getUserInfo();
-    btn.textContent = user.name;
-    btn.classList.add("primary");
-  } else {
-    btn.textContent = "知乎登录";
-    btn.classList.remove("primary");
-  }
-}
-
 function openCodex() {
   const html = CARDS.map((c) => {
     const got = save.cards.includes(c.id);
@@ -1228,7 +1200,6 @@ function bind() {
   if ($("startBtn")) $("startBtn").onclick = startGame;
   if ($("enter2d")) $("enter2d").onclick = function () { resumeAC(); startGame(); };
   if ($("mode3dBtn")) $("mode3dBtn").onclick = function () { location.href = "./play3d.html?play=1"; };
-  if ($("zhihuLoginBtn")) $("zhihuLoginBtn").onclick = handleZhihuLogin;
   if ($("codexStartBtn")) $("codexStartBtn").onclick = openCodex;
   if ($("settingsStartBtn")) $("settingsStartBtn").onclick = openSettings;
   if ($("briefStartBtn")) $("briefStartBtn").onclick = openBriefing;
@@ -1255,7 +1226,6 @@ function bind() {
     if (e.target && e.target.id === "view") e.preventDefault();
   }, {passive: false});
   bindPad();
-  updateZhihuLoginButton();
 }
 
 async function boot() {
