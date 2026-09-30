@@ -1,5 +1,7 @@
-(() => {
+(async () => {
 "use strict";
+if(window.MoonSave)await window.MoonSave.ready;
+const saveStore=window.MoonSave||localStorage;
 const W = 960, H = 540, SCALE = 4, CHAR_S = 2, FOX_S = 1, SAVE_KEY = "moonexplorer-v3", STEP = 1 / 60;
 const S3 = 1 / 40, DEPTH = 2.4;
 const cvs = document.getElementById("view");
@@ -149,11 +151,11 @@ let player, companion, cam, camN, shake, beam, particles, floats, stars, imgs, e
 function defaultSave() {
   return {cards:[], solved:[], enemies:[], collected:[], checks:[], volume:0.4, scene:0, crystals:0, score:0, oxygen:100, muted:false, intro:false, abilities:{djump:false,dash:false,scan:false}, spawn:null};
 }
-function persist() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (e) {} }
+function persist() { try { saveStore.setItem(SAVE_KEY, JSON.stringify(save)); } catch (e) {} }
 function loadSave() {
   save = defaultSave();
   try {
-    const s = JSON.parse(localStorage.getItem(SAVE_KEY) || "null");
+    const s = JSON.parse(saveStore.getItem(SAVE_KEY) || "null");
     if (s) save = Object.assign(save, s);
     save.collected = save.collected || [];
     save.crystals = save.collected.length;
@@ -725,7 +727,7 @@ function openBriefing() {
     "<div class='brief'>" +
     "<h2>作品简介</h2>" +
     "<h3>技术细节</h3>" +
-    "<p>本作是一款可离线打开的网页科考游戏：整包只有 HTML、CSS、JavaScript 和图片，不装客户端、不连服务器、不登录账号，也没有广告和内购，双击本地页面或挂到静态托管就能玩。操作是键盘 WASD 移动、空格跳跃、SHIFT 喷气、E 交互、R 发射科学射线，手机用底部虚拟键。主画面是 WebGL 第三人称 3D：碰撞、氧气、存档和谜题仍按原横板关卡结算，镜头斜后方跟随，看得见你和北极狐。手感带土狼时间、跳跃缓冲、按住可跳得更高，校准设备后才会写入二段跳与短突。角色用简单几何体贴像素图，场景由平台挤出的月壤方块搭成。背景音乐和音效全部由 Web Audio 在设备里合成。探索进度写入浏览器 localStorage。默认入口是 2D 像素主页 index.html，本页为 3D 选项。</p>" +
+    "<p>本作是一款可离线打开的网页科考游戏：整包只有 HTML、CSS、JavaScript 和图片，不装客户端，游客可使用本地存档，也可选择知乎登录后使用云存档，没有广告和内购，双击本地页面或挂到静态托管就能玩。操作是键盘 WASD 移动、空格跳跃、SHIFT 喷气、E 交互、R 发射科学射线，手机用底部虚拟键。主画面是 WebGL 第三人称 3D：碰撞、氧气、存档和谜题仍按原横板关卡结算，镜头斜后方跟随，看得见你和北极狐。手感带土狼时间、跳跃缓冲、按住可跳得更高，校准设备后才会写入二段跳与短突。角色用简单几何体贴像素图，场景由平台挤出的月壤方块搭成。背景音乐和音效全部由 Web Audio 在设备里合成。探索进度保存到本机；登录后自动同步云端。默认入口是 2D 像素主页 index.html，本页为 3D 选项。</p>" +
     "<h3>三大关卡</h3>" +
     "<p>近未来，人类在月球建起模块化「摇篮科研基地」。你是新晋科考队员，北极狐与你同行，三条航线必须按顺序校准：当前区设备未修好，下一区气闸保持锁定；已经开通的航线可以随时从航线图快速转移。第一关月面荒野是开阔的巡检带，地面裂开三处辐射坑，中间有横向移动平台，沿途有便携补氧柱、荒野检查点和巡视车残骸；你要先在月壤管路台接通管路，气闸才会放行进入基地，并解锁低重力连跳——空中再按一次空格，才能上到直径测绘桩、重力演示器、月海成像仪和更远处的环形山标尺。第二关摇篮基地走廊改在密封舱段里行进，既有上下升降台也有左右滑台，热控窗和气闸铭牌夹在辐射缝之间；把气闸均压台的舱压稳定在大约四十到六十千帕的安全区间后，观测站航线才会打开，同时解锁喷气短突，按 SHIFT 向前短促推进，用来越过裂隙，月尘里燃料金贵，因此带冷却。第三关天文观测站台架在高台与望远镜之间，悬停干扰体更多，末段还有一具更硬的主干扰体；对准月相对准仪上的上弦月后，科学射线变长，隐藏晶体会发亮，北极狐也会标出下一处目标，收齐站台上的潮汐、地轴和测距档案后，可以从气闸返回月面，开始下一轮巡检。</p>" +
     "<h3>揭秘设置</h3>" +

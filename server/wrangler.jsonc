@@ -1,0 +1,16 @@
+{
+  "name": "moonexplorer-account",
+  "main": "worker.mjs",
+  "compatibility_date": "2026-09-28",
+  "workers_dev": false,
+  "routes": [
+    {"pattern":"moon.chipai.cc/api/moon/*","zone_name":"chipai.cc"},
+    {"pattern":"moon.chipai.cc/zhihu-callback*","zone_name":"chipai.cc"}
+  ],
+  "vars": {
+    "PUBLIC_ORIGIN": "https://moon.chipai.cc",
+    "ZHIHU_APP_ID": "849",
+    "ZHIHU_REDIRECT_URI": "https://moon.chipai.cc/zhihu-callback"
+  },
+  "d1_databases": [{"binding":"DB","database_name":"moonexplorer-saves","database_id":"59612008-51c8-4e5b-94e0-b3ace2bd36b5"}]
+}

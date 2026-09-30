@@ -1,8 +1,10 @@
-(() => {
+(async () => {
 'use strict';
+if(window.MoonSave)await window.MoonSave.ready;
+const saveStore=window.MoonSave||localStorage;
 const S=window.ColonySim,$=id=>document.getElementById(id),canvas=$('colonyCanvas'),ctx=canvas.getContext('2d'),mini=$('minimap'),mc=mini.getContext('2d'),KEY='moonexplorer-colony-v1';
 let state=S.create(),loaded=false,saveAvailable=true;
-try{const saved=S.restore(localStorage.getItem(KEY));if(saved){state=saved;loaded=true;}}catch{saveAvailable=false;}
+try{const saved=S.restore(saveStore.getItem(KEY));if(saved){state=saved;loaded=true;}}catch{saveAvailable=false;}
 let camera={x:20,y:20,zoom:1.35},paused=false,speed=1,category='全部',buildType=null,selected=null,hover=null,grid=false,drag=null,accumulator=0,lastTime=0,toastUntil=0,dirty=true,modalKind='',selectedUnit=null,lastDelta={},width=800,height=500;
 const keys=new Set(),tileW=64,tileH=32,sprites={},tiles={},vehicleSprites=new Map(),vehicleHeadings=new Map(),spriteMasks=new WeakMap();
 let fadedBuildings=[],pendingTrade=null;
@@ -12,7 +14,7 @@ const fmt=n=>Math.floor(n).toLocaleString('zh-CN');
 function el(tag,text,cls){const e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(cls)e.className=cls;return e;}
 function button(text,fn,cls){const b=el('button',text,cls);b.type='button';b.onclick=fn;return b;}
 function notify(text){$('toast').textContent=text;toastUntil=performance.now()+3200;$('toast').classList.add('show');}
-function save(manual=false){try{localStorage.setItem(KEY,JSON.stringify(state));saveAvailable=true;if(manual)notify('殖民地已保存到本机');}catch{saveAvailable=false;if(manual)notify('浏览器未允许保存，请保持此页面打开');}}
+function save(manual=false){try{saveStore.setItem(KEY,JSON.stringify(state));saveAvailable=true;if(manual)notify('殖民地已保存到本机' + (window.MoonSave?.status().user?'，云端同步状态见账号页':''));}catch{saveAvailable=false;if(manual)notify('浏览器未允许保存，请保持此页面打开');}}
 function resize(){const r=canvas.getBoundingClientRect();width=r.width;height=r.height;const dpr=Math.min(2,devicePixelRatio||1);canvas.width=Math.round(width*dpr);canvas.height=Math.round(height*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);ctx.imageSmoothingEnabled=false;dirty=true;}
 function project(x,y){return {x:width/2+(x-y-camera.x+camera.y)*tileW/2*camera.zoom,y:height*.53+(x+y-camera.x-camera.y)*tileH/2*camera.zoom};}
 function unproject(x,y){const a=(x-width/2)/(tileW/2*camera.zoom),b=(y-height*.53)/(tileH/2*camera.zoom);return {x:Math.floor((a+b)/2+camera.x+.5),y:Math.floor((b-a)/2+camera.y+.5)};}
@@ -208,7 +210,7 @@ function renderPanel(){const body=$('panelBody'),m=S.metrics(state);const oldPor
  if(modalKind==='inspect')details(body);
  if(modalKind==='demolish'){body.append(el('p','拆除所选设施并回收35%的月矿（不返还资金）。拆除承担管网中继的通道或建筑，可能使后方区域断开供给。'));body.append(button('确认拆除',()=>{S.demolish(state,selected);selected=null;$('panel').close();save();dirty=true;updateUI();},'danger'));}
  if(modalKind==='restart'){body.append(el('p','重新开始会覆盖本机的月球殖民存档，其他游戏进度不受影响。'));body.append(button('确认新开局',()=>{state=S.create();tradeDrafts.clear();pendingTrade=null;vehicleHeadings.clear();turretHeadings.clear();combatFX.clear();lastDelta={};camera={x:20,y:20,zoom:1.35};selected=null;selectedUnit=null;cancel();paused=false;$('panel').close();save();updateUI();},'danger'));}
- if(modalKind==='load'){body.append(el('p','读取上次自动或手动保存的殖民地，替换当前状态。'));body.append(button('确认读取',()=>{try{const restored=S.restore(localStorage.getItem(KEY));if(!restored){notify('没有可用存档');return;}state=restored;tradeDrafts.clear();pendingTrade=null;vehicleHeadings.clear();turretHeadings.clear();combatFX.clear();lastDelta={};selected=null;selectedUnit=null;cancel();$('panel').close();dirty=true;updateUI();notify('已恢复本机殖民地');}catch{notify('浏览器未允许读取存档');}}));}
+ if(modalKind==='load'){body.append(el('p','读取上次自动或手动保存的殖民地，替换当前状态。'));body.append(button('确认读取',()=>{try{const restored=S.restore(saveStore.getItem(KEY));if(!restored){notify('没有可用存档');return;}state=restored;tradeDrafts.clear();pendingTrade=null;vehicleHeadings.clear();turretHeadings.clear();combatFX.clear();lastDelta={};selected=null;selectedUnit=null;cancel();$('panel').close();dirty=true;updateUI();notify('已恢复本机殖民地');}catch{notify('浏览器未允许读取存档');}}));}
 }
 function clickTile(p){if(buildType){const r=S.build(state,buildType,p.x,p.y);if(!r.ok)notify(r.error);else{notify(S.types[buildType].name+(r.building.remaining?'施工中':'已铺设'));save();dirty=true;updateUI();}}else{
  const u=state.units.find(u=>u.x===p.x&&u.y===p.y);if(u){selectedUnit=u.id;selected=null;dirty=true;updateUI();return;}

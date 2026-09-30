@@ -1,0 +1,16 @@
+{
+  "name": "moonexplorer",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "build": "node tools/build-static.mjs",
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "test:account": "node tools/test-account-api.mjs && node tools/test-account-workerd.mjs",
+    "test:account:browser": "node tools/test-account-browser.cjs"
+  },
+  "devDependencies": {
+    "miniflare": "^5.20260926.1-alpha",
+    "wrangler": "^4.144.0"
+  }
+}

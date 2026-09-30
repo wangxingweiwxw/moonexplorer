@@ -1,0 +1,10 @@
+const assert=require('node:assert/strict'),G=require('../roam-math.js');
+const near=(a,b,t=1e-6)=>assert.ok(Math.abs(a-b)<t,`${a} != ${b}`);
+const metreStart=G.point(12,80);near(G.distance(metreStart,G.move(metreStart,G.forward(metreStart,.3),1).p),1);
+let start=G.point(0,179.999),h=G.forward(start,Math.PI/2),step=G.move(start,h,1000);assert.ok(G.coords(step.p).lon<0);near(G.distance(start,step.p),1000);
+start=G.point(89.999,25);step=G.move(start,G.forward(start,0),1000);assert.ok(G.coords(step.p).lat<89.99);near(G.coords(step.p).lon,-155,1e-5);near(G.dot(step.p,step.heading),0);
+start=G.point(-89.999,25);step=G.move(start,G.forward(start,Math.PI),1000);assert.ok(G.coords(step.p).lat>-89.99);near(G.dot(step.p,step.heading),0);
+start=G.point(0,0);step=G.move(start,G.forward(start,Math.PI/2),G.R*2*Math.PI);near(G.distance(start,step.p),0,1e-6);
+const right=G.turn(start,G.forward(start,0),Math.PI/2);near(G.dot(right,G.frame(start).east),1);
+let state={p:G.point(-41.6385,-153.9852),heading:G.forward(G.point(-41.6385,-153.9852),.6)};const begin=state.p.slice();for(let i=0;i<10000;i++)state=G.move(state.p,state.heading,G.R*2*Math.PI/10000);near(G.distance(begin,state.p),0,.001);near(Math.hypot(...state.p),1);near(G.dot(state.p,state.heading),0);
+console.log('PASS: 1 m units, antimeridian, both poles, right turn, great-circle loop, 10000-step drift');

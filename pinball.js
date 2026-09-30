@@ -1,5 +1,7 @@
-(() => {
+(async () => {
 "use strict";
+if(window.MoonSave)await window.MoonSave.ready;
+const saveStore=window.MoonSave||localStorage;
 const W = 960, H = 540, STEP = 1 / 120, SUB = 3;
 const cvs = document.getElementById("view");
 const ctx = cvs.getContext("2d");
@@ -33,7 +35,7 @@ let msg = "按住空格蓄力，松开发射", msgT = 3.2;
 let particles = [], trail = [];
 let ball, bumpers, walls, flipL, flipR, targets, slings, rolls, inserts, lane, skillOnce;
 
-try { best = Math.max(0, +localStorage.getItem(HS_KEY) || 0); } catch (e) { best = 0; }
+try { best = Math.max(0, +saveStore.getItem(HS_KEY) || 0); } catch (e) { best = 0; }
 
 function U(u, v) {
   return { x: TABLE.x + u * TABLE.w, y: TABLE.y + v * TABLE.h };
@@ -162,7 +164,7 @@ function addScore(n, x, y, label) {
   if (score > best) {
     best = score;
     setHi();
-    try { localStorage.setItem(HS_KEY, String(best)); } catch (e) {}
+    try { saveStore.setItem(HS_KEY, String(best)); } catch (e) {}
   }
   if (x != null) pop(x, y, (label ? label + " " : "") + "+" + got);
 }

@@ -1,5 +1,7 @@
-(() => {
+(async () => {
 'use strict';
+if(window.MoonSave)await window.MoonSave.ready;
+const saveStore=window.MoonSave||localStorage;
 const $=id=>document.getElementById(id),T=window.THREE,ART=window.RoverArt,REG=window.RoverRegions,CODEX=window.RoverCodex,M=window.MoonMath;
 if(!T||!REG){$('stage').innerHTML='<p class="webgl-error">3D 资源未加载，请刷新或检查项目文件是否完整。</p>';return;}
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),lerp=(a,b,t)=>a+(b-a)*t,smooth=t=>{t=clamp(t,0,1);return t*t*(3-2*t);};
@@ -48,8 +50,8 @@ let environment=null,vehicleLights=[];
 const visitedRegions=new Set([15]);
 function toast(text){$('toast').textContent=text;$('toast').classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').classList.remove('show'),3400);}
 function stop(){holds.clear();auto=false;guidePath=[];car.vx=car.vz=car.vy=car.yawRate=0;accu=0;}
-function save(){try{localStorage.setItem(SAVE,JSON.stringify({version:2,x:car.x,z:car.z,yaw:car.yaw,totalTravel,visited:[...visitedRegions],heritage}));}catch{}}
-try{const v=JSON.parse(localStorage.getItem(SAVE));if([1,2].includes(v?.version)&&[v.x,v.z,v.yaw].every(Number.isFinite)&&Math.abs(v.x)<1e6&&Math.abs(v.z)<1e6){const pos=v.version===1?LAYOUT.migrateLegacy(v.x,v.z):v;car.x=pos.x;car.z=pos.z;car.yaw=v.yaw;totalTravel=Number.isFinite(v.totalTravel)?Math.max(0,v.totalTravel):0;if(Array.isArray(v.visited))v.visited.filter(n=>regions.some(r=>r.id===n)).forEach(n=>visitedRegions.add(n));heritage=v.heritage!==false;}}catch{}
+function save(){try{saveStore.setItem(SAVE,JSON.stringify({version:2,x:car.x,z:car.z,yaw:car.yaw,totalTravel,visited:[...visitedRegions],heritage}));}catch{}}
+try{const v=JSON.parse(saveStore.getItem(SAVE));if([1,2].includes(v?.version)&&[v.x,v.z,v.yaw].every(Number.isFinite)&&Math.abs(v.x)<1e6&&Math.abs(v.z)<1e6){const pos=v.version===1?LAYOUT.migrateLegacy(v.x,v.z):v;car.x=pos.x;car.z=pos.z;car.yaw=v.yaw;totalTravel=Number.isFinite(v.totalTravel)?Math.max(0,v.totalTravel):0;if(Array.isArray(v.visited))v.visited.filter(n=>regions.some(r=>r.id===n)).forEach(n=>visitedRegions.add(n));heritage=v.heritage!==false;}}catch{}
 function segment(x,z,a,b){const dx=b.x-a.x,dz=b.z-a.z,t=clamp(((x-a.x)*dx+(z-a.z)*dz)/(dx*dx+dz*dz),0,1);return {distance:Math.hypot(x-a.x-dx*t,z-a.z-dz*t),t};}
 function worldHeight(x,z){
  const base=2.2+Math.sin(x*.035)*.35+Math.cos(z*.04)*.35;let nearest=regions[0],edge=Infinity;

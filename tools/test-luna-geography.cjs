@@ -1,0 +1,4 @@
+const assert=require('node:assert/strict'),G=require('../roam-geography'),L=require('../roam-layout'),M=require('../roam-math');
+for(const [i,c,expected] of [[9,[12.7142,62.2129],[1710,1553,940]],[10,[3.7863,56.6242],[1679,1302,911]],[11,[-.5137,56.3638],[1739,1260,986]]]){assert.deepEqual(G.coordinates[i],c);const d=G.coordinates.slice(0,3).map(a=>Math.round(M.distance(M.point(...a),M.point(...c))/1000));assert.deepEqual(d,expected);assert.equal(d.indexOf(Math.min(...d)),2);const p=L.toGeography(L.positions[i].x,L.positions[i].z);assert.ok(G.environment(p.x,p.z).earthVisible);assert.ok(L.positions[i].z>L.positions[i===9?5:i-1].z);}
+assert.ok(Math.abs(M.distance(M.point(...G.coordinates[10]),M.point(...G.coordinates[11]))/1000-130.627)<.01);
+console.log('PASS LROC coordinates, actual Apollo distances, Apollo 17 nearest, southward Luna chain and near-side Earth');

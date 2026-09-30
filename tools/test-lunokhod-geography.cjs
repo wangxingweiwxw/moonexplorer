@@ -1,0 +1,4 @@
+const assert=require('node:assert/strict'),G=require('../roam-geography'),L=require('../roam-layout'),M=require('../roam-math');
+for(const [i,c,expected,nearest] of [[12,[38.23764,-35.00163],[1048,2020,1787],0],[13,[25.9994,30.4076],[728,1148,176],2]]){assert.deepEqual(G.coordinates[i],c);const d=G.coordinates.slice(0,3).map(a=>Math.round(M.distance(M.point(...a),M.point(...c))/1000));assert.deepEqual(d,expected);assert.equal(d.indexOf(Math.min(...d)),nearest);const p=L.toGeography(L.positions[i].x,L.positions[i].z);assert.ok(G.environment(p.x,p.z).earthVisible);}
+assert.ok(L.positions[12].x<L.positions[6].x&&L.positions[12].z>L.positions[6].z);assert.ok(L.positions[13].z<L.positions[2].z);assert.ok(L.edges.some(([a,b])=>a===6&&b===12));assert.ok(L.edges.some(([a,b])=>a===2&&b===13));
+console.log('PASS Lunokhod carrier coordinates, real Apollo distances, distinct western/northern routes and near-side Earth');
