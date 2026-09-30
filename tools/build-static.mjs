@@ -2,7 +2,10 @@
 import {readdir,mkdir,copyFile,rm,readFile,writeFile} from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
+import {checkDeployConfig} from './check-deploy-config.mjs';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..'),out=path.join(root,'public-site');
+await checkDeployConfig(root);
+console.log('Deployment config verified: server/worker.mjs + public-site + DB (moonexplorer-saves).');
 if(path.dirname(out)!==root||path.basename(out)!=='public-site')throw Error('Unsafe output path');
 await rm(out,{recursive:true,force:true});await mkdir(out,{recursive:true});
 const allowed=new Set(['.js','.html','.css','.png','.jpg','.svg','.wav','.json','.txt']);

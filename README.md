@@ -10,7 +10,7 @@
 
 ## Cloudflare 部署
 
-与 3Dschool 一样，根配置支持 Workers Static Assets + D1，通过 GitHub Workers Builds 发布。构建命令 `npm run build`，部署命令 `npx wrangler deploy`，Node 24。
+与 3Dschool 一样，根配置支持 Workers Static Assets + D1，通过 GitHub Workers Builds 发布。构建命令 `npm run build`，部署命令 `npm run deploy`，Node 24。
 
 **`moonexplorer-saves` D1 已创建，UUID `59612008-51c8-4e5b-94e0-b3ace2bd36b5` 已填入两份 Wrangler 配置，无需重复创建。首次部署仍需执行 `server/schema.sql`，并为对应 Worker 添加运行时 Secret `ZHIHU_APP_KEY`。** 默认 Worker 名称 moonexplorer，需与控制台实际项目一致。
 

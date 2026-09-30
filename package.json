@@ -4,8 +4,8 @@
   "version": "1.0.0",
   "scripts": {
     "build": "node tools/build-static.mjs",
-    "dev": "wrangler dev",
-    "deploy": "wrangler deploy",
+    "dev": "wrangler dev --config wrangler.jsonc",
+    "deploy": "node tools/check-deploy-config.mjs && wrangler deploy --config wrangler.jsonc",
     "test:account": "node tools/test-account-api.mjs && node tools/test-account-workerd.mjs",
     "test:account:browser": "node tools/test-account-browser.cjs"
   },

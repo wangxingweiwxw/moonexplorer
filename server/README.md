@@ -29,7 +29,7 @@ npx wrangler d1 execute moonexplorer-saves --remote --file server/schema.sql
 Workers Builds 配置：
 
 - Build command：`npm run build`
-- Deploy command：`npx wrangler deploy`
+- Deploy command：`npm run deploy`
 - Root directory：源码所在目录，仓库根目录则留空
 - Node：24（根目录 .node-version 已设置）
 
@@ -98,3 +98,12 @@ python -m http.server 8080 --directory public-site
 本地访问 `http://localhost:8080/account.html`。没有 Worker 时显示登录尚未启用，游客游戏和本地存档正常。接口测试包含 Node 24 SQLite 与真实 workerd/D1 本地环境，知乎响应使用模拟数据。独立浏览器上下文验证跨设备与实际殖民地状态恢复；这些测试不代表 App 849 的真实 OAuth 和云端部署已经通过。
 
 上线联调必须检查：授权同意和取消；真实 state 回传；同一知乎账号重复登录得到同一用户标识；两账号隔离；手机和另一设备续玩；本地/云端冲突；退出和过期；原游客存档仍可继续。不要用旧的 CloudBase ZIP 发布账号功能，旧包不包含本次前端和 Worker。
+
+
+## 部署日志出现 Create wrangler.jsonc / Asset too large
+
+如果日志中出现 `Detected Project Settings`、`Create wrangler.jsonc` 和 `assets.directory: "."`，说明这次部署没有读到项目根配置。随后将 node_modules/workerd 当作静态资源上传，是配置缺失导致的后果。源码 ZIP 内已包含根目录 wrangler.jsonc，需确认它确实提交到了 Cloudflare 构建所用的 GitHub 分支，且与 package.json 同级；同时核对 Root directory。
+
+Cloudflare → Worker → Settings → Builds → Build configuration：Build command 使用 `npm run build`，Deploy command 改为 **`npm run deploy`**。新增校验会在配置缺失或被纯静态配置替换时停止，部署脚本显式使用 `--config wrangler.jsonc`。不要将 Root directory 填为 public-site；仓库根目录就是项目时留空。
+
+正确日志应显示 `Deployment config verified`、资源目录 public-site，以及 Worker 的 DB 和 ASSETS 绑定。npm 的 allow-scripts 警告并非本次失败原因；本次错误发生在上传仓库中的 workerd 二进制时。
